@@ -11,8 +11,11 @@ const PORT = 3000;
 app.use(express.json());
 
 // Base de datos en memoria (simulada)
-let authors = [];
-let posts = [];
+//let authors = [];
+const { authors } = require("./src/data/authors");
+const { posts } = require("./src/data/posts");
+
+//let posts = [];
 
 // Variable para generar IDs únicos autoincrementales
 let nextId = 1;
