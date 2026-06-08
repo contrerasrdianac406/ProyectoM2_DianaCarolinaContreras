@@ -11,8 +11,8 @@ const PORT = 3000;
 app.use(express.json());
 
 // 5. Definir rutas
-app.get("/", (req, res) => {
-  res.json({});
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK" });
 });
 
 // 6. Iniciar el servidor
