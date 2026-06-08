@@ -1,0 +1,24 @@
+{
+  "name": "8.proyectom2_dianacarolinacontreras",
+  "version": "1.0.0",
+  "description": "API MiniBlog para gestionar usuarios y publicaciones",
+  "homepage": "https://github.com/contrerasrdianac406/ProyectoM2_DianaCarolinaContreras#readme",
+  "bugs": {
+    "url": "https://github.com/contrerasrdianac406/ProyectoM2_DianaCarolinaContreras/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contrerasrdianac406/ProyectoM2_DianaCarolinaContreras.git"
+  },
+  "license": "ISC",
+  "author": "Diana Carolina Contreras Romero",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
