@@ -132,6 +132,33 @@ app.put("/authors/:id", (req, res) => {
   res.status(200).json(authors[authorIndex]);
 });
 
+// DELETE /authors/:id - Eliminar un autor por su ID
+app.delete("/authors/:id", (req, res) => {
+  // extraer y validar el ID
+
+  const id = Number(req.params.id);
+
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "El id debe ser un número " });
+  }
+
+  // Buscar el indice de un autor
+  const index = authors.findIndex((author) => author.id === id);
+
+  //Validar que el autor exista
+  if (index === -1) {
+    return res.status(404).json({ error: "Autor no encontrado" });
+  }
+
+  //Eliminar el autor del arrayy guardar referencia
+
+  const deleted = authors.splice(index, 1)[0];
+
+  // Responder con el autor eliminado
+
+  res.status(200).json(deleted);
+});
+
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto http://localhost:${PORT}`);
