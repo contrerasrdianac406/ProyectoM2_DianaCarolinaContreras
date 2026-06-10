@@ -4,6 +4,7 @@ loadEnvFile(".env");
 
 // configuración de las rutas
 const rutasAutores = require("./src/routers/author.routes");
+const rutasPosts = require("./src/routers/posts.routes");
 
 // configuracion para express
 const express = require("express");
@@ -14,6 +15,7 @@ app.use(express.json());
 
 //Registrar las rutas
 app.use("/", rutasAutores);
+app.use("/", rutasPosts);
 
 //Definir un puerto
 const PORT = process.env.PORT;
@@ -21,7 +23,7 @@ const PORT = process.env.PORT;
 // Base de datos en memoria (simulada)
 //let authors = [];
 //const { authors } = require("./src/db/authors");
-const { posts } = require("./src/db/posts");
+//const { posts } = require("./src/db/posts"); preguntar
 
 //Endpoints para autores
 //GET/health - Verificar que el servidor está funcionando
