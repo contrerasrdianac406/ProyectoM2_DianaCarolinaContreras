@@ -1,7 +1,7 @@
 const { posts } = require("../db/posts");
 
 // POST/posts
-const crearPosts = (res, req) => {
+const crearPosts = (req, res) => {
   //Extraer los datos del post del body de la solicitud
   const { authorId, title, content, published, created_at } = req.body;
 
@@ -30,12 +30,12 @@ const crearPosts = (res, req) => {
 };
 
 //GET/posts
-const obtenerTodosPosts = (res, req) => {
+const obtenerTodosPosts = (req, res) => {
   res.status(200).json(posts);
 };
 
 //GET/posts/:id
-const obtenerUnPost = (res, req) => {
+const obtenerUnPost = (req, res) => {
   //Extraer el ID de los parámetros de la ruta y lo convierte a número
   const id = Number(req.params.id);
 
@@ -60,7 +60,7 @@ const obtenerUnPost = (res, req) => {
 };
 
 //PUT/posts/:id
-const actualizarUnPost = (res, req) => {
+const actualizarUnPost = (req, res) => {
   //Extrae el ID del endpoint
   const id = Number(req.params.id);
 
@@ -102,7 +102,7 @@ const actualizarUnPost = (res, req) => {
 };
 
 //DELETE/posts/:id
-const eliminarUnPost = (res, req) => {
+const eliminarUnPost = (req, res) => {
   //Extrae el id del endpoint
   const id = Number(req.params.id);
 
@@ -131,7 +131,7 @@ const eliminarUnPost = (res, req) => {
 
 // GET /posts/author/:authorId
 
-const obtenerPostsDeUnAutor = (res, req) => {
+const obtenerPostsDeUnAutor = (req, res) => {
   // 1. Extraemos y validamos que el authorId sea un número
   const authorId = Number(req.params.authorId);
 
