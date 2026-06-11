@@ -1,3 +1,4 @@
+const { authors } = require("../db/authors");
 const { posts } = require("../db/posts");
 
 // POST/posts
@@ -14,7 +15,7 @@ const crearPosts = (req, res) => {
 
   //Crear el objeto Post
   const newPost = {
-    id: nextIdPost++,
+    id: posts.length + 1,
     title,
     content,
     authorId,

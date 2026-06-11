@@ -15,22 +15,21 @@ const {
   eliminarUnPost,
   obtenerPostsDeUnAutor,
 } = require("../controllers/posts.controllers");
-const { obtenerUnAutor } = require("../controllers/authors.controllers");
 
 // POST/posts
 router.post("/posts", crearPosts);
 
-//GET/authors
+//GET/posts
 router.get("/posts", obtenerTodosPosts);
 
-//GET/authors/:id
-router.get("/posts/:id", obtenerUnAutor);
+//GET/posts/:id
+router.get("/posts/:id", obtenerUnPost);
 
-//PUT/authors/:id
-router.put("/authors/:id", actualizarUnPost);
+//PUT/posts/:id
+router.put("/posts/:id", actualizarUnPost);
 
-//DELETE/authors/:id
-router.delete("/authors/:id", eliminarUnPost);
+//DELETE/posts/:id
+router.delete("/posts/:id", eliminarUnPost);
 
 // GET /posts/author/:authorId
 router.get("/posts/author/:authorId", obtenerPostsDeUnAutor);
