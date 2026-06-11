@@ -5,7 +5,7 @@ const express = require("express");
 const router = express.Router();
 
 // llamado de la data
-const { posts } = require("../db/posts");
+const { posts } = require("../data/posts");
 
 const {
   crearPosts,

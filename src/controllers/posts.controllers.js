@@ -1,5 +1,5 @@
-const { authors } = require("../db/authors");
-const { posts } = require("../db/posts");
+const { authors } = require("../data/authors");
+const { posts } = require("../data/posts");
 
 // POST/posts
 const crearPosts = (req, res) => {

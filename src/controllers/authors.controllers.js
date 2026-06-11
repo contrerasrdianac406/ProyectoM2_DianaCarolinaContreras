@@ -1,4 +1,4 @@
-const { authors } = require("../db/authors");
+const { authors } = require("../data/authors");
 
 // POST/authors
 const crearAutores = (req, res) => {
