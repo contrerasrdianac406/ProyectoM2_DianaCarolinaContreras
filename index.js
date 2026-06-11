@@ -1,6 +1,9 @@
 //para traer las variables entorno del archivo .env
-const { loadEnvFile } = require("node:process");
-loadEnvFile(".env");
+/* const { loadEnvFile } = require("node:process");
+loadEnvFile(".env"); */
+
+// trae las variables de entorno
+require("dotenv").config();
 
 // configuración de las rutas
 const rutasAutores = require("./src/routers/author.routes");
@@ -9,6 +12,9 @@ const rutasPosts = require("./src/routers/posts.routes");
 // configuracion para express
 const express = require("express");
 const app = express();
+
+// se trae configuración desde la carpeta config del archivo config.js
+const config = require("./src/config/config");
 
 //Middlewares
 app.use(express.json());
