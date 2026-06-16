@@ -1,14 +1,15 @@
 //para traer las variables entorno del archivo .env
-/* const { loadEnvFile } = require("node:process");
-loadEnvFile(".env"); */
+const { loadEnvFile } = require("node:process");
+loadEnvFile(".env");
+
+// validación de las variables de entorno
+const requiredEnvVars = require("./src/config/validateEnv");
+
+// configuracion del pool de la BD
+const pool = require("./src/db/config");
 
 // trae las variables de entorno
-//require("dotenv").config(); 
-
-// configuración de las variables de entorno
-const { loadEnvFile } = require('node:process');
-loadEnvFile('.env');
-
+//require("dotenv").config();
 
 // configuración de las rutas
 const rutasAutores = require("./src/routers/author.routes");
