@@ -145,11 +145,11 @@ const eliminarUnPost = async (req, res) => {
     }
 
         //Validar que el autor exista
-    const authorExists = await pool.query(
-      "SELECT * FROM authors WHERE id = $1",
+    const postExists = await pool.query(
+      "SELECT * FROM posts WHERE id = $1",
       [id],
     );
-    if (authorExists.rows.length === 0) {
+    if (postExists.rows.length === 0) {
       return res.status(404).json({ error: "Autor no encontrado" });
     }
 
