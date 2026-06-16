@@ -1,0 +1,497 @@
+openapi: 3.0.0
+info:
+  title: API MiniBlog
+  description: API para gestionar autores y publicaciones de un miniblog
+  version: 1.0.0
+  contact:
+    name: Diana Carolina Contreras Romero
+    url: https://github.com/contrerasrdianac406/ProyectoM2_DianaCarolinaContreras
+  license:
+    name: ISC
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desarrollo
+  - url: https://api.miniblog.com
+    description: Servidor de producción
+
+tags:
+  - name: Authors
+    description: Operaciones relacionadas con autores
+  - name: Posts
+    description: Operaciones relacionadas con publicaciones
+
+paths:
+  /authors:
+    post:
+      summary: Crear un nuevo autor
+      description: Crea un nuevo autor en la base de datos
+      tags:
+        - Authors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+              properties:
+                name:
+                  type: string
+                  example: Diana Carolina Contreras
+                  description: Nombre completo del autor
+                email:
+                  type: string
+                  format: email
+                  example: diana@example.com
+                  description: Correo electrónico único del autor
+                bio:
+                  type: string
+                  example: Desarrolladora apasionada por Node.js
+                  description: Biografía corta del autor (opcional)
+      responses:
+        '201':
+          description: Autor creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Solicitud inválida - faltan campos requeridos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: El nombre y el correo electrónico son obligatorios
+        '409':
+          description: Conflicto - el correo electrónico ya está registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: El correo electrónico ya está registrado
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error interno del servidor
+
+    get:
+      summary: Obtener todos los autores
+      description: Recupera la lista completa de autores
+      tags:
+        - Authors
+      responses:
+        '200':
+          description: Lista de autores obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /authors/{id}:
+    get:
+      summary: Obtener un autor por ID
+      description: Recupera los detalles de un autor específico
+      tags:
+        - Authors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del autor
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Autor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: El ID debe ser un número válido
+        '404':
+          description: Autor no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Autor no encontrado
+        '500':
+          description: Error interno del servidor
+
+    put:
+      summary: Actualizar un autor
+      description: Actualiza los datos de un autor existente
+      tags:
+        - Authors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del autor a actualizar
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Diana Carolina Contreras
+                  description: Nuevo nombre del autor
+                email:
+                  type: string
+                  format: email
+                  example: diana.nueva@example.com
+                  description: Nuevo correo electrónico
+                bio:
+                  type: string
+                  example: Desarrolladora con experiencia en backend
+                  description: Nueva biografía
+      responses:
+        '200':
+          description: Autor actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Solicitud inválida o ID inválido
+        '404':
+          description: Autor no encontrado
+        '500':
+          description: Error interno del servidor
+
+    delete:
+      summary: Eliminar un autor
+      description: Elimina un autor de la base de datos
+      tags:
+        - Authors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del autor a eliminar
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Autor eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Autor eliminado exitosamente
+        '400':
+          description: ID inválido
+        '404':
+          description: Autor no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /posts:
+    post:
+      summary: Crear una nueva publicación
+      description: Crea una nueva publicación en la base de datos
+      tags:
+        - Posts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+                - author_id
+              properties:
+                title:
+                  type: string
+                  example: Introducción a Node.js
+                  description: Título de la publicación
+                content:
+                  type: string
+                  example: Node.js es un runtime de JavaScript que permite ejecutar código en el servidor
+                  description: Contenido de la publicación
+                author_id:
+                  type: integer
+                  example: 1
+                  description: ID del autor que publica
+                published:
+                  type: boolean
+                  example: true
+                  description: Indica si la publicación está publicada (opcional)
+      responses:
+        '201':
+          description: Publicación creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Solicitud inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: titulo, contenido, and autor_id son requeridos
+        '404':
+          description: Autor no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Autor no encontrado
+        '500':
+          description: Error interno del servidor
+
+    get:
+      summary: Obtener todas las publicaciones
+      description: Recupera la lista completa de publicaciones
+      tags:
+        - Posts
+      responses:
+        '200':
+          description: Lista de publicaciones obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '500':
+          description: Error interno del servidor
+
+  /posts/{id}:
+    get:
+      summary: Obtener una publicación por ID
+      description: Recupera los detalles de una publicación específica
+      tags:
+        - Posts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la publicación
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Publicación encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: ID inválido
+        '404':
+          description: Publicación no encontrada
+        '500':
+          description: Error interno del servidor
+
+    put:
+      summary: Actualizar una publicación
+      description: Actualiza los datos de una publicación existente
+      tags:
+        - Posts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la publicación a actualizar
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Introducción a Node.js avanzado
+                content:
+                  type: string
+                  example: Node.js es un runtime poderoso para aplicaciones del lado del servidor
+                published:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Publicación actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Solicitud inválida o ID inválido
+        '404':
+          description: Publicación no encontrada
+        '500':
+          description: Error interno del servidor
+
+    delete:
+      summary: Eliminar una publicación
+      description: Elimina una publicación de la base de datos
+      tags:
+        - Posts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la publicación a eliminar
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Publicación eliminada exitosamente
+        '400':
+          description: ID inválido
+        '404':
+          description: Publicación no encontrada
+        '500':
+          description: Error interno del servidor
+
+  /posts/author/{authorId}:
+    get:
+      summary: Obtener publicaciones de un autor
+      description: Recupera todas las publicaciones de un autor específico
+      tags:
+        - Posts
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID del autor
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Publicaciones del autor obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: ID de autor inválido
+        '404':
+          description: Autor no encontrado
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: ID único del autor
+        name:
+          type: string
+          example: Diana Carolina Contreras
+          description: Nombre completo del autor
+        email:
+          type: string
+          format: email
+          example: diana@example.com
+          description: Correo electrónico del autor
+        bio:
+          type: string
+          example: Desarrolladora apasionada por Node.js
+          description: Biografía del autor
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-06-06T04:16:14.733Z'
+          description: Fecha de creación del autor
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: ID único de la publicación
+        title:
+          type: string
+          example: Introducción a Node.js
+          description: Título de la publicación
+        content:
+          type: string
+          example: Node.js es un runtime de JavaScript...
+          description: Contenido de la publicación
+        author_id:
+          type: integer
+          example: 1
+          description: ID del autor de la publicación
+        published:
+          type: boolean
+          example: true
+          description: Indica si la publicación está publicada
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-06-01T10:00:00Z'
+          description: Fecha de creación de la publicación

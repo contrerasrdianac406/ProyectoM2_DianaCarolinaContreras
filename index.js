@@ -11,6 +11,13 @@ const pool = require("./src/db/config");
 // trae las variables de entorno
 //require("dotenv").config();
 
+// configuracion de la OpenApi
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./openapi.yaml');
+
+
+
 // configuración de las rutas
 const rutasAutores = require("./src/routers/author.routes");
 const rutasPosts = require("./src/routers/posts.routes");
@@ -28,6 +35,9 @@ app.use(express.json());
 //Registrar las rutas
 app.use("/", rutasAutores);
 app.use("/", rutasPosts);
+
+// ruta de la documentación openApi
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //Definir un puerto
 const PORT = process.env.PORT;
