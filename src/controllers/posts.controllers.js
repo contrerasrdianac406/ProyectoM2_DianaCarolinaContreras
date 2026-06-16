@@ -1,179 +1,219 @@
-const { authors } = require("../data/authors");
-const { posts } = require("../data/posts");
+//conexión de la data creada localmente
+//const { authors } = require("../data/authors");
+// const { posts } = require("../data/posts");
 
-// POST/posts
-const crearPosts = (req, res) => {
-  //Extraer los datos del post del body de la solicitud
-  const { authorId, title, content, published, created_at } = req.body;
+// Pool para la conexion de la BD
+const { Pool } = require("pg");
+const pool = require("../db/config");
+const { response } = require("express");
 
-  //Valuidacion de campos requeridos
-  if (!authorId || !title || !content) {
-    return res.status(400).json({
-      error: "authorId, title and content are required",
-    });
+// POST/posts - creación de posts usuarios
+const crearPosts = async (req, res) => {
+  try {
+    //Extraer los datos del post del body de la solicitud
+    const {title, content,author_id, published } = req.body;
+
+    //Validación de campos requeridos
+    if (!author_id || !title || !content) {
+      return res.status(400).json({
+        error: "titulo, contenido, and autor_id son requeridos",
+      });
+    }
+
+    //Validar que authorId sea un número válido
+    const authorIdNum = Number(author_id);
+    if (Number.isNaN(authorIdNum) || authorIdNum <= 0) {
+      return res.status(400).json({
+        error: "autor_id debe ser un número positivo válido",
+      });
+    }
+
+    //Validar que el autor exista
+    const authorExists = await pool.query(
+      "SELECT * FROM authors WHERE id = $1",
+      [author_id],
+    );
+    if (authorExists.rows.length === 0) {
+      return res.status(404).json({ error: "Autor no encontrado" });
+    }
+
+    const result = await pool.query(
+      "INSERT INTO posts (title, content,author_id, published) VALUES ($1, $2, $3, $4) RETURNING *",
+      [title, content, author_id, published],
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error al crear post:", error);
+    res.status(500).json({ error: "Error interno del servidor", details: error.message });
   }
-
-  // funciín para validar que el post si exista
-
-  //Crear el objeto Post
-  const newPost = {
-    id: posts.length + 1,
-    title,
-    content,
-    authorId,
-    published: published || false, //si no viene sera false
-    created_at: created_at || new Date().toISOString(),
-  };
-
-  //Guardar el post en el array de posts
-  posts.push(newPost);
-
-  //Devolver el post creado con un status 201
-  res.status(201).json(newPost);
 };
 
-//GET/posts
-const obtenerTodosPosts = (req, res) => {
-  res.status(200).json(posts);
+
+//GET/posts : obtener todos los posts
+const obtenerTodosPosts = async (req, res) => {
+  try{
+     const result = await pool.query("SELECT * FROM posts");
+    res.status(200).json(result.rows);
+    //Esta linea de codigo me permite hacer la consulta de desde la data local
+    //res.status(200).json(posts);
+  }catch(error){
+    res.status(500).json({ error: "Error interno del servidor" });
+
+  }
 };
 
-//GET/posts/:id
-const obtenerUnPost = (req, res) => {
-  //Extraer el ID de los parámetros de la ruta y lo convierte a número
-  const id = Number(req.params.id);
+//GET/posts/:id : obtener posts por id
+const obtenerUnPost = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
-  //Validar que eñ id es valido
-  if (Number.isNaN(id)) {
-    return res.status(400).json({
-      error: "ID must be a number",
-    });
+    if (Number.isNaN(id)) {
+      return res.status(400).json({
+        error: "el id debe ser un número",
+      });
+    }
+
+    const result = await pool.query("SELECT * FROM posts WHERE id = $1", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: "Post no encontrado",
+      });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
   }
-  //buscar el post por ID
-  const post = posts.find((p) => p.id === id);
-
-  if (!post) {
-    //si el post no existe
-    return res.status(404).json({
-      error: "Post not found",
-    });
-  }
-
-  //responder que el post fue encontrado
-  res.status(200).json(post);
 };
 
-//PUT/posts/:id
-const actualizarUnPost = (req, res) => {
-  //Extrae el ID del endpoint
-  const id = Number(req.params.id);
+//PUT/posts/:id : actualizar post por id
+const actualizarUnPost = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
-  if (Number.isNaN(id)) {
-    return res.status(400).json({
-      error: "ID must be a number",
-    });
+    if (Number.isNaN(id)) {
+      return res.status(400).json({
+        error: "el id debe ser un número",
+      });
+    }
+
+    const {title, content,author_id, published } = req.body;
+
+    if (!title || !content || !author_id) {
+      return res.status(400).json({
+        error: "titulo, contenido, and autor_id son requeridos",
+      });
+    }
+
+    //Validar que el autor exista
+    const authorExists = await pool.query(
+      "SELECT * FROM authors WHERE id = $1",
+      [author_id],
+    );
+    if (authorExists.rows.length === 0) {
+      return res.status(404).json({ error: "Autor no encontrado" });
+    }
+
+    const result = await pool.query(
+      "UPDATE posts SET title = $1, content = $2, author_id = $3, published = $4 WHERE id = $5 RETURNING *",
+      [ title, content,author_id, published, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: "Post no encontrado",
+      });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
   }
-
-  //Extrae los nuevos datos del body
-  const { authorId, title, content, published, created_at } = req.body;
-
-  if (!title || !content || !authorId) {
-    return res.status(400).json({
-      error: "title, or content, or authorId are required",
-    });
-  }
-
-  //buscar el indice del post por ID en el array
-  //findIndex devuelve la posicion del elemento array, sino lo encuentra devuelve -1
-  const index = posts.findIndex((p) => p.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({
-      error: "Post not found",
-    });
-  }
-
-  posts[index] = {
-    id,
-    title,
-    content,
-    authorId,
-    published,
-    created_at,
-  };
-
-  res.status(200).json(posts[index]);
 };
 
-//DELETE/posts/:id
-const eliminarUnPost = (req, res) => {
-  //Extrae el id del endpoint
-  const id = Number(req.params.id);
+//DELETE/posts/:id : eliminar post por id
+const eliminarUnPost = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
-  if (Number.isNaN(id)) {
-    return res.status(400).json({
-      error: "ID must be a number",
-    });
+    if (Number.isNaN(id)) {
+      return res.status(400).json({
+        error: "ID debe ser un número",
+      });
+    }
+
+        //Validar que el autor exista
+    const authorExists = await pool.query(
+      "SELECT * FROM authors WHERE id = $1",
+      [id],
+    );
+    if (authorExists.rows.length === 0) {
+      return res.status(404).json({ error: "Autor no encontrado" });
+    }
+
+    const result = await pool.query("DELETE FROM posts WHERE id = $1 RETURNING *", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: "Post no encontrado",
+      });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
   }
-
-  //Buscar el indice del posts
-  const index = posts.findIndex((p) => p.id === id);
-
-  //Validar que el indice exista
-  if (index === -1) {
-    return res.status(404).json({
-      error: "Posts not found",
-    });
-  }
-
-  //Elimina el posts con el indice indicado
-  const deleted = posts.splice(index, 1)[0];
-
-  //Cod de respuesta del posts eliminado
-  res.status(200).json(deleted);
 };
 
-// GET /posts/author/:authorId
+// GET /posts/author/:authorId : obtener todos los post por autor
 
-const obtenerPostsDeUnAutor = (req, res) => {
-  // 1. Extraemos y validamos que el authorId sea un número
-  const authorId = Number(req.params.authorId);
+const obtenerPostsDeUnAutor = async(req, res) =>{
+    const sql = `
+        SELECT posts.id,
+            posts.title,
+            posts.content,
+            posts.author_id,
+            posts.published,
+            posts.created_at,
+            authors.name,
+            authors.email,
+            authors.bio        
+        FROM posts 
+            JOIN authors ON posts.author_id=authors.id
+            WHERE posts.author_id=$1`;
 
-  if (Number.isNaN(authorId)) {
-    return res.status(400).json({
-      error: "authorId must be a number",
-    });
-  }
+    try{
+        // 1. Extraemos y validamos que el authorId sea un número
+        const authorId = Number(req.params.authorId);
 
-  // 2. Verificamos si el autor realmente existe en nuestra base de datos en memoria
-  const authorExists = authors.find((a) => a.id === authorId);
-  if (!authorExists) {
-    return res.status(404).json({
-      error: "Author not found",
-    });
-  }
+        if (Number.isNaN(authorId)) {
+            return res.status(400).json({
+                error: "authorId must be a number"
+            });
+        }
 
-  // 3. Filtramos todos los posts que pertenezcan a este authorId
-  const authorPosts = posts.filter((p) => p.authorId === authorId);
+        // 2. Verificamos si el autor existe en la BD
+        const authorExists = await pool.query('SELECT * FROM authors WHERE id = $1', [authorId]);
+        
+        if (authorExists.rows.length === 0){
+            return res.status(404).json({
+                error: "Author not found"
+            })
+        }
 
-  // 4. Mapeamos los posts encontrados para incrustar el objeto del autor dentro de cada uno
-  const postsWithAuthorDetail = authorPosts.map((post) => {
-    return {
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      published: post.published,
-      created_at: post.created_at,
-      author: {
-        id: authorExists.id,
-        name: authorExists.name,
-        email: authorExists.email,
-        bio: authorExists.bio,
-      },
-    };
-  });
+        // 3. Obtenemos los posts del autor con el JOIN
+        const consulta = await pool.query(sql, [authorId]);
 
-  // 5. Respondemos con el array finalizado
-  res.status(200).json(postsWithAuthorDetail);
+        // 4. Respondemos con los datos
+        res.status(200).json(consulta.rows);
+    }catch (error) {
+        console.error('Error fetching posts by author:', error);
+        res.status(500).json({
+            error: "Internal server error"
+        });
+    }
 };
 
 module.exports = {
