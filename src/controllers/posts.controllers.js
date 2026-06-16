@@ -13,6 +13,8 @@ const crearPosts = (req, res) => {
     });
   }
 
+  // funciín para validar que el post si exista
+
   //Crear el objeto Post
   const newPost = {
     id: posts.length + 1,

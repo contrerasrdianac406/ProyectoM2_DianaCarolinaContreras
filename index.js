@@ -3,7 +3,12 @@
 loadEnvFile(".env"); */
 
 // trae las variables de entorno
-require("dotenv").config();
+//require("dotenv").config(); 
+
+// configuración de las variables de entorno
+const { loadEnvFile } = require('node:process');
+loadEnvFile('.env');
+
 
 // configuración de las rutas
 const rutasAutores = require("./src/routers/author.routes");
