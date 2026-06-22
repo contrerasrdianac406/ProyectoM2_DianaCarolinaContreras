@@ -1,34 +1,33 @@
 //para traer las variables entorno del archivo .env
-import { loadEnvFile } from "node:process";
+const { loadEnvFile } = require("node:process");
 loadEnvFile(".env");
 
 // validación de las variables de entorno
-import requiredEnvVars from "./src/config/validateEnv.js";
+const requiredEnvVars = require("./src/config/validateEnv");
 
 // configuracion del pool de la BD
-import pool from "./src/db/config.js";
+const pool = require("./src/db/config");
 
 // trae las variables de entorno
-//import dotenv from "dotenv";
-//dotenv.config();
+//require("dotenv").config();
 
 // configuracion de la OpenApi
-import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
-const swaggerDocument = YAML.load('./openapi.yaml');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./docs/openapi.yaml');
 
 
 
 // configuración de las rutas
-import rutasAutores from "./src/routers/author.routes.js";
-import rutasPosts from "./src/routers/posts.routes.js";
+const rutasAutores = require("./src/routers/author.routes");
+const rutasPosts = require("./src/routers/posts.routes");
 
 // configuracion para express
-import express from "express";
+const express = require("express");
 const app = express();
 
 // se trae configuración desde la carpeta config del archivo config.js
-import config from "./src/config/config.js";
+const config = require("./src/config/config");
 
 //Middlewares
 app.use(express.json());
@@ -45,8 +44,8 @@ const PORT = process.env.PORT;
 
 // Base de datos en memoria (simulada)
 //let authors = [];
-//import { authors } from "./src/db/authors.js";
-//import { posts } from "./src/db/posts.js"; preguntar
+//const { authors } = require("./src/db/authors");
+//const { posts } = require("./src/db/posts"); preguntar
 
 //Endpoints para autores
 //GET/health - Verificar que el servidor está funcionando

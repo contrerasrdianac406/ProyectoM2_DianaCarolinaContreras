@@ -1,9 +1,9 @@
 // conexión de la data creada localmente
-//import { authors } from "../data/authors.js";
+//const { authors } = require("../data/authors");
 
 // pool para la conexion de la BD
-import pool from "../db/config.js";
-// import { response } from "express"; // No es necesario importar response
+const pool = require("../db/config");
+const { response } = require("express");
 
 // POST/authors - creación de autores
 const crearAutores = async (req, res) => {
@@ -164,7 +164,7 @@ const eliminarUnAutor = async (req, res) => {
 }
 };
 
-export {
+module.exports = {
   crearAutores,
   obtenerTodosAutores,
   obtenerUnAutor,

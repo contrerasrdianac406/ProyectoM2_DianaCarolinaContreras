@@ -1,5 +1,5 @@
 // configuración de la base de datos
-import { Pool } from "pg";
+const { Pool } = require("pg");
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -9,4 +9,4 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
-export default pool;
+module.exports = pool;

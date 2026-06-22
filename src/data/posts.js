@@ -41,4 +41,4 @@ let posts = [
   },
 ];
 
-export { posts };
+module.exports = { posts };

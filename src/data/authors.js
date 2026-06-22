@@ -40,4 +40,4 @@ let authors = [
   },
 ];
 
-export { authors };
+module.exports = { authors };
