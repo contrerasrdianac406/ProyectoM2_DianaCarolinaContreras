@@ -2,8 +2,18 @@
 //const { authors } = require("../data/authors");
 
 // pool para la conexion de la BD
+/* const { Pool } = require("pg");
 const pool = require("../db/config");
-const { response } = require("express");
+const { response } = require("express"); */
+
+
+// pool para la conexion de la BD Ecma6
+
+import pg from 'pg';
+const { Pool } = pg;
+import pool from "../db/config.js";
+
+
 
 // POST/authors - creación de autores
 const crearAutores = async (req, res) => {
@@ -30,6 +40,7 @@ const crearAutores = async (req, res) => {
         .json({ error: "El correo electrónico ya está registrado" });
     }
 
+// Crea el nuevo autor en la BD
     const result = await pool.query(
       "INSERT INTO authors (name, email, bio) VALUES ($1, $2, $3) RETURNING *",
       [name, email, bio],
@@ -139,7 +150,7 @@ const eliminarUnAutor = async (req, res) => {
   try {
   // extraer y validar el ID
   const id = Number(req.params.id);
-
+  // Valida que el Id ingresado corresponda a un número
   if (Number.isNaN(id)) {
     return res.status(400).json({ error: "El id debe ser un número " });
   }
@@ -164,7 +175,7 @@ const eliminarUnAutor = async (req, res) => {
 }
 };
 
-module.exports = {
+export {
   crearAutores,
   obtenerTodosAutores,
   obtenerUnAutor,

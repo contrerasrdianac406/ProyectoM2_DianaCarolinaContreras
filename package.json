@@ -12,11 +12,13 @@
   },
   "license": "ISC",
   "author": "Diana Carolina Contreras Romero",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
@@ -26,3 +28,4 @@
     "yamljs": "^0.3.0"
   }
 }
+
