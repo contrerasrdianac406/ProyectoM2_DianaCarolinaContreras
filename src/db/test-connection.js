@@ -1,7 +1,7 @@
-const { loadEnvFile } = require("node:process");
+import { loadEnvFile } from "node:process";
 loadEnvFile(".env");
 
-const pool = require("./config");
+import pool from "./config.js";
 
 async function testConnection() {
   try {

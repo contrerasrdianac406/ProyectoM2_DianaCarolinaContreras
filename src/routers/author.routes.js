@@ -1,19 +1,19 @@
 // importo Express
-const express = require("express");
+import express from "express";
 
 // Invoco el router
 const router = express.Router();
 
 // llamado de la data
-const { authors } = require("../data/authors");
+//import { authors } from "../data/authors.js";
 
-const {
+import {
   crearAutores,
   obtenerTodosAutores,
   obtenerUnAutor,
   actualizarUnAutor,
   eliminarUnAutor,
-} = require("../controllers/authors.controllers");
+} from "../controllers/authors.controllers.js";
 
 // POST/authors
 router.post("/authors", crearAutores);
@@ -30,4 +30,4 @@ router.put("/authors/:id", actualizarUnAutor);
 //DELETE/authors/:id
 router.delete("/authors/:id", eliminarUnAutor);
 
-module.exports = router;
+export default router;

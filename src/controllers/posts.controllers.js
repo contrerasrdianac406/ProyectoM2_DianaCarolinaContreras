@@ -1,11 +1,10 @@
 //conexión de la data creada localmente
-//const { authors } = require("../data/authors");
-// const { posts } = require("../data/posts");
+//import { authors } from "../data/authors.js";
+// import { posts } from "../data/posts.js";
 
 // Pool para la conexion de la BD
-const { Pool } = require("pg");
-const pool = require("../db/config");
-const { response } = require("express");
+import pool from "../db/config.js";
+// import { response } from "express"; // No es necesario importar response
 
 // POST/posts - creación de posts usuarios
 const crearPosts = async (req, res) => {
@@ -197,7 +196,7 @@ const obtenerPostsDeUnAutor = async(req, res) =>{
         // 2. Verificamos si el autor existe en la BD
         const authorExists = await pool.query('SELECT * FROM authors WHERE id = $1', [authorId]);
         
-        if (authorExists.rows.length === 0){
+        if (authorExists.rows.length === 0) {
             return res.status(404).json({
                 error: "Author not found"
             })
@@ -216,7 +215,7 @@ const obtenerPostsDeUnAutor = async(req, res) =>{
     }
 };
 
-module.exports = {
+export {
   crearPosts,
   obtenerTodosPosts,
   obtenerUnPost,
