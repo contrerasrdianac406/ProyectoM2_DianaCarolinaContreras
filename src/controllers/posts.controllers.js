@@ -3,9 +3,16 @@
 // const { posts } = require("../data/posts");
 
 // Pool para la conexion de la BD
-const { Pool } = require("pg");
+/* const { Pool } = require("pg");
 const pool = require("../db/config");
-const { response } = require("express");
+const { response } = require("express"); */
+
+// Pool para la conexion de la BD en emac6
+
+import pg from 'pg';
+const {Pool} = pg;
+import pool from '../db/config.js';
+
 
 // POST/posts - creación de posts usuarios
 const crearPosts = async (req, res) => {
@@ -36,7 +43,7 @@ const crearPosts = async (req, res) => {
     if (authorExists.rows.length === 0) {
       return res.status(404).json({ error: "Autor no encontrado" });
     }
-
+  // Inserta el nuevo post en la BD
     const result = await pool.query(
       "INSERT INTO posts (title, content,author_id, published) VALUES ($1, $2, $3, $4) RETURNING *",
       [title, content, author_id, published],
@@ -115,7 +122,7 @@ const actualizarUnPost = async (req, res) => {
     if (authorExists.rows.length === 0) {
       return res.status(404).json({ error: "Autor no encontrado" });
     }
-
+    // actualiza el post en la BD
     const result = await pool.query(
       "UPDATE posts SET title = $1, content = $2, author_id = $3, published = $4 WHERE id = $5 RETURNING *",
       [ title, content,author_id, published, id],
@@ -216,7 +223,7 @@ const obtenerPostsDeUnAutor = async(req, res) =>{
     }
 };
 
-module.exports = {
+export {
   crearPosts,
   obtenerTodosPosts,
   obtenerUnPost,

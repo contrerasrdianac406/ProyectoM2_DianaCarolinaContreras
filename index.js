@@ -1,59 +1,31 @@
 //para traer las variables entorno del archivo .env
-const { loadEnvFile } = require("node:process");
-loadEnvFile(".env");
+import { loadEnvFile } from 'node:process';
+loadEnvFile('.env');
 
-// validación de las variables de entorno
-const requiredEnvVars = require("./src/config/validateEnv");
+const requiredEnvVars = [
+    'PORT', 'NODE_ENV', 'DB_URL', 'API_KEY', 'CORS_ORIGIN',
+    'DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'
+];
+for (const varName of requiredEnvVars) {
+  if (!process.env[varName]) {
+    console.error(`Error: La variable de entorno ${varName} no está definida`);
+    process.exit(1);
+  }
+}
+console.log('Todas las variables de entorno requeridas están presentes');
 
-// configuracion del pool de la BD
-const pool = require("./src/db/config");
+//const { default: app } = await import('./src/app.js');
+//const { default: config } = await import('./src/config/config.js');
 
-// trae las variables de entorno
-//require("dotenv").config();
+const { default: app } = await import('./src/app.js');
 
-// configuracion de la OpenApi
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./openapi.yaml');
+const { default: config } = await import('./src/config/config.js');
 
-
-
-// configuración de las rutas
-const rutasAutores = require("./src/routers/author.routes");
-const rutasPosts = require("./src/routers/posts.routes");
-
-// configuracion para express
-const express = require("express");
-const app = express();
-
-// se trae configuración desde la carpeta config del archivo config.js
-const config = require("./src/config/config");
-
-//Middlewares
-app.use(express.json());
-
-//Registrar las rutas
-app.use("/", rutasAutores);
-app.use("/", rutasPosts);
-
-// ruta de la documentación openApi
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-//Definir un puerto
-const PORT = process.env.PORT;
-
-// Base de datos en memoria (simulada)
-//let authors = [];
-//const { authors } = require("./src/db/authors");
-//const { posts } = require("./src/db/posts"); preguntar
-
-//Endpoints para autores
-//GET/health - Verificar que el servidor está funcionando
-app.get("/health", (req, res) => {
-  res.status(200).json({ message: "Servidor funcionando correctamente" });
+app.listen(config.PORT, () => {
+    console.log(`Servidor corriendo en el puerto http://localhost:${config.PORT} en modo ${config.NODE_ENV}`);
 });
 
-// Iniciar el servidor
-app.listen(PORT, () => {
-  console.log(`Servidor iniciado en el puerto http://localhost:${PORT}`);
-});
+export default app;
+
+
+
