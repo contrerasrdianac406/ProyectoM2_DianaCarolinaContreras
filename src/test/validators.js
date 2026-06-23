@@ -10,3 +10,12 @@ export function validarEmail(email) {
     }
     return null;
 }
+
+
+export function esNum (valorId){
+    if (isNaN(valorId)) {
+      return true;
+    }
+    return false;
+
+}

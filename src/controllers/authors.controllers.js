@@ -12,6 +12,7 @@ const { response } = require("express"); */
 import pg from 'pg';
 const { Pool } = pg;
 import pool from "../db/config.js";
+import { json } from 'express';
 
 
 
@@ -28,6 +29,20 @@ const crearAutores = async (req, res) => {
         .status(400)
         .json({ error: "El nombre y el correo electrónico son obligatorios" });
     }
+
+      // Detectar intentos básicos de SQL injection
+      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
+      if (patronesSQL.test(name)) {
+        return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
+      }
+
+
+    // Validar el formato del email.
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json ({error: "El formato del email es inválido"});
+    }
+  
 
     //Validar que el correo electrónico no esté repetido
     const emailExists = await pool.query(
@@ -127,6 +142,12 @@ const actualizarUnAutor = async (req, res) => {
       "SELECT * FROM authors WHERE id = $1",
       [id],
     );
+
+    // Detectar intentos básicos de SQL injection
+      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
+      if (patronesSQL.test(name)) {
+        return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
+    }
 
     //BUSCAR el autor
     if (autorExiste.rows.length === 0) {

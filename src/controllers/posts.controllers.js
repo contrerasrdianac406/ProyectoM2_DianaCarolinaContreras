@@ -43,6 +43,13 @@ const crearPosts = async (req, res) => {
     if (authorExists.rows.length === 0) {
       return res.status(404).json({ error: "Autor no encontrado" });
     }
+
+     // Detectar intentos básicos de SQL injection
+      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
+      if (patronesSQL.test(title || content)) {
+        return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
+      }
+
   // Inserta el nuevo post en la BD
     const result = await pool.query(
       "INSERT INTO posts (title, content,author_id, published) VALUES ($1, $2, $3, $4) RETURNING *",
@@ -114,6 +121,12 @@ const actualizarUnPost = async (req, res) => {
       });
     }
 
+/*      // Detectar intentos básicos de SQL injection
+      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
+      if (patronesSQL.test(title || content)) {
+        return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
+      } */
+
     //Validar que el autor exista
     const authorExists = await pool.query(
       "SELECT * FROM authors WHERE id = $1",
@@ -122,6 +135,8 @@ const actualizarUnPost = async (req, res) => {
     if (authorExists.rows.length === 0) {
       return res.status(404).json({ error: "Autor no encontrado" });
     }
+
+
     // actualiza el post en la BD
     const result = await pool.query(
       "UPDATE posts SET title = $1, content = $2, author_id = $3, published = $4 WHERE id = $5 RETURNING *",
