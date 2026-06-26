@@ -13,12 +13,14 @@ import pg from 'pg';
 const { Pool } = pg;
 import pool from "../db/config.js";
 import { json } from 'express';
+import { validarEmail,esNum,patronesSQL } from '../test/validators.js';
 
 
 
 // POST/authors - creación de autores
 const crearAutores = async (req, res) => {
   try {
+
     //Extraer datos del cuerpo de la solicitud
     const { name, email, bio } = req.body;
 
@@ -30,12 +32,11 @@ const crearAutores = async (req, res) => {
         .json({ error: "El nombre y el correo electrónico son obligatorios" });
     }
 
-      // Detectar intentos básicos de SQL injection
-      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
-      if (patronesSQL.test(name)) {
+    // Detectar intentos básicos de SQL injection
+    // evitar SQL injection para el nombre
+      if (patronesSQL (name) === true){
         return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
-      }
-
+      }  
 
     // Validar el formato del email.
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,7 +44,6 @@ const crearAutores = async (req, res) => {
       return res.status(400).json ({error: "El formato del email es inválido"});
     }
   
-
     //Validar que el correo electrónico no esté repetido
     const emailExists = await pool.query(
       "SELECT * FROM authors WHERE email = $1",
@@ -71,7 +71,7 @@ const crearAutores = async (req, res) => {
 //GET/authors : obtener todos los autores
 const obtenerTodosAutores = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM authors");
+    const result = await pool.query("SELECT * FROM authors ORDER BY id ASC");
     res.status(200).json(result.rows);
     //Esta linea de codigo me permite hacer la consulta de desde la data local
     //res.status(200).json(authors);
@@ -98,8 +98,7 @@ const obtenerUnAutor = async (req, res) => {
     }
 
     // consultar un autor en la base de datos
-    const result = await pool.query("SELECT * FROM authors WHERE id = $1", [id]);
-
+    const result = await pool.query("SELECT * FROM authors WHERE id = $1", [id] );
     const authors = result.rows;
 
     //BUSCAR el autor en el array
@@ -121,10 +120,16 @@ const obtenerUnAutor = async (req, res) => {
 const actualizarUnAutor = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    // Validar que el ID sea un número válido
+    // Validar que el ID sea un número válido para validar si es una letra 
     if (Number.isNaN(id)) {
-      return res.status(400).json({ error: "El ID debe ser un número válido" });
+      return res.status(400).json({ error: "El ID debe ser un número válido2" });
     }
+
+    // Si el id es menor o igual a 0 o negativos
+      if (Number(id) <= 0) {
+        return res.status(404).json({ error: 'El ID debe ser un número válido3' });
+      }
+
 
     //Extraer los datos del body de la solicitud
     const { name, email, bio, created_at } = req.body;
@@ -144,10 +149,10 @@ const actualizarUnAutor = async (req, res) => {
     );
 
     // Detectar intentos básicos de SQL injection
-      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
-      if (patronesSQL.test(name)) {
+    // evitar SQL injection para el nombre
+      if (patronesSQL (name) === true){
         return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
-    }
+      }  
 
     //BUSCAR el autor
     if (autorExiste.rows.length === 0) {

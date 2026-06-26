@@ -12,6 +12,7 @@ const { response } = require("express"); */
 import pg from 'pg';
 const {Pool} = pg;
 import pool from '../db/config.js';
+import {validarEmail, esNum, patronesSQL} from '../test/validators.js';
 
 
 // POST/posts - creación de posts usuarios
@@ -21,8 +22,6 @@ const crearPosts = async (req, res) => {
     const {title, content,author_id, published } = req.body;
 
     //Validación de campos requeridos
-
-    //Validar que authorId sea un número válido
     const authorIdNum = Number(author_id);
     if (!author_id || !title || !content) {
       return res.status(400).json({
@@ -44,11 +43,15 @@ const crearPosts = async (req, res) => {
       return res.status(404).json({ error: "Autor no encontrado" });
     }
 
-     // Detectar intentos básicos de SQL injection
-      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
-      if (patronesSQL.test(title || content)) {
+    // Detectar intentos básicos de SQL injection
+    // evitar SQL injection para el titulo
+      if (patronesSQL (title) === true){
         return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
-      }
+      }  
+    // evitar SQL injection en el contenido
+        if (patronesSQL (content) === true){
+        return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
+      }  
 
   // Inserta el nuevo post en la BD
     const result = await pool.query(
@@ -67,7 +70,7 @@ const crearPosts = async (req, res) => {
 //GET/posts : obtener todos los posts
 const obtenerTodosPosts = async (req, res) => {
   try{
-     const result = await pool.query("SELECT * FROM posts");
+     const result = await pool.query("SELECT * FROM posts ORDER BY id ASC");
     res.status(200).json(result.rows);
     //Esta linea de codigo me permite hacer la consulta de desde la data local
     //res.status(200).json(posts);
@@ -120,12 +123,15 @@ const actualizarUnPost = async (req, res) => {
         error: "titulo, contenido, and autor_id son requeridos",
       });
     }
-
-/*      // Detectar intentos básicos de SQL injection
-      const patronesSQL = /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i;
-      if (patronesSQL.test(title || content)) {
+    // Detectar intentos básicos de SQL injection
+    // evitar SQL injection para el titulo
+      if (patronesSQL (title) === true){
         return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
-      } */
+      }  
+    // evitar SQL injection en el contenido
+        if (patronesSQL (content) === true){
+        return res.status(400).json ({error:'El nombre contiene palabras no permitidas'});
+      }  
 
     //Validar que el autor exista
     const authorExists = await pool.query(
