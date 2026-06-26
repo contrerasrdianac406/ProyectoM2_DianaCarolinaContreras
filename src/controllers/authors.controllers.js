@@ -183,7 +183,7 @@ const eliminarUnAutor = async (req, res) => {
 
     // Si el id es menor o igual a 0 o negativos
     if (Number(id) <= 0) {
-       return res.status(404).json({ error: 'El id debe ser un número válido' });
+      return res.status(404).json({ error: 'El id debe ser un número válido' });
     }
 
   //Verificar si el autor existe
