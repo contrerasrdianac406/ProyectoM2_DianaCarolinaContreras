@@ -15,7 +15,7 @@ vi.mock('../db/config.js', () => ({
     // 2. Mock para traer un autor por ID (SELECT * FROM authors WHERE id = $1)
       if (sql.includes('SELECT * FROM authors WHERE id =')) {
         const authorId = params ? params[0] : 1;
-        // 🔽 AGREGA ESTA CONDICIÓN: Si el ID es 999, devolvemos filas vacías
+        // 🔽 AGREGA ESTA CONDICIÓN: Si el ID es 5, devolvemos filas vacías
         if (Number(authorId) === 5) {
           return { rows: [] }; 
         }
@@ -82,7 +82,17 @@ vi.mock('../db/config.js', () => ({
             }]
           };
         }
-        
+
+        // Mock para DELETE - eliminar autor
+        if (sql.includes('DELETE FROM authors')) {
+          const authorId = params ? params[0] : null;
+
+          // Como tu test busca eliminar el ID 5 y esperas un 404, 
+          // simulamos que el ID 5 NO existe en la base de datos devolviendo rowCount: 0
+          if (Number(authorId) === 5) {
+            return { rows: [], rowCount: 0 }; 
+          }
+        }
       
       // Mock para otros queries
       return { rows: [] };
@@ -230,3 +240,37 @@ describe('PUT/authors/id', ()=> {
     });
 
 });
+
+describe ('DELETE/authors', ()=>{
+    //Test para eliminar un autor por id
+    test('16. eliminar un autor por id', async ()=>{
+        const response = await request (app)
+        .delete('/authors/1');
+
+        expect(response.statusCode).toBe(200);
+      });
+
+    test('17.validar un autor cuando el id es invalido es una letra', async () =>{
+      const response = await request (app)
+      .delete('/authors/a')
+      expect(response.statusCode).toBe(400);
+      expect(response.body.error).toContain('El id debe ser un número ');
+    });
+
+    // test para validar que el id es invalido corresponde a un  número negativo
+    test('18.validar un autor cuando el id es invalido numero negativo', async () =>{
+      const response = await request (app)
+      .delete('/authors/-1')
+      expect(response.statusCode).toBe(404);
+      expect(response.body.error).toContain('El id debe ser un número válido');
+    });
+
+    // test para autor no existente por id
+    test('19.validar un autor no existente por id', async () =>{
+      const response = await request (app)
+      .delete('/authors/5')
+      expect(response.statusCode).toBe(404);
+    });
+
+  });
+  
