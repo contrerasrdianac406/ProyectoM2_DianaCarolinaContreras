@@ -1,18 +1,11 @@
-//para traer las variables entorno del archivo .env
-import { loadEnvFile } from 'node:process';
-loadEnvFile('.env');
+// Cargar variables de entorno (usar .env en local)
+import dotenv from 'dotenv';
+dotenv.config();
 
-const requiredEnvVars = [
-    'PORT', 'NODE_ENV', 'DB_URL', 'API_KEY', 'CORS_ORIGIN',
-    'DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'
-];
-for (const varName of requiredEnvVars) {
-  if (!process.env[varName]) {
-    console.error(`Error: La variable de entorno ${varName} no está definida`);
-    process.exit(1);
-  }
-}
-console.log('Todas las variables de entorno requeridas están presentes');
+import validateEnv from './src/config/validateEnv.js';
+
+// Validar variables de entorno (flexible: acepta DB_URL/DATABASE_URL o credenciales DB_*)
+validateEnv();
 
 //const { default: app } = await import('./src/app.js');
 //const { default: config } = await import('./src/config/config.js');
