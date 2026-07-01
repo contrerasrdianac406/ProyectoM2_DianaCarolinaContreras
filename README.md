@@ -1,4 +1,4 @@
-# ProyectoM2_DianaCarolinaContreras
+# 📘 ProyectoM2_DianaCarolinaContreras
 
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
@@ -7,7 +7,7 @@
 
 API MiniBlog desarrollada con Node.js, Express y PostgreSQL para gestionar autores y publicaciones de forma sencilla y escalable.
 
-## Descripción
+## 📖 Descripción
 
 Esta aplicación expone un backend REST con operaciones CRUD para:
 - Autores
@@ -15,7 +15,7 @@ Esta aplicación expone un backend REST con operaciones CRUD para:
 - Búsqueda de publicaciones por autor
 - Documentación interactiva con Swagger
 
-## Tecnologías utilizadas
+## 🛠️ Tecnologías utilizadas
 
 - Node.js
 - Express
@@ -24,30 +24,63 @@ Esta aplicación expone un backend REST con operaciones CRUD para:
 - Swagger UI
 - dotenv
 
-## Requisitos previos
+## 📁 Estructura de carpetas del proyecto
+
+```text
+.
+├── index.js                 # Punto de entrada de la aplicación
+├── openapi.yaml             # Especificación OpenAPI de la API
+├── package.json             # Dependencias y scripts del proyecto
+├── scripts/
+│   └── setup.sql            # Script SQL para crear tablas y datos base
+├── src/
+│   ├── app.js               # Configuración de Express y Swagger
+│   ├── config/
+│   │   ├── config.js        # Configuración general
+│   │   └── validateEnv.js  # Validación de variables de entorno
+│   ├── controllers/        # Lógica de negocio de autores y posts
+│   ├── data/               # Datos de ejemplo utilizados por la app
+│   ├── db/
+│   │   └── config.js       # Conexión a PostgreSQL
+│   ├── routers/            # Definición de rutas de la API
+│   └── test/               # Pruebas automatizadas con Vitest
+└── README.md
+```
+
+## 🚀 Requisitos y pasos para ejecutar localmente
+
+### ✅ Requisitos previos
 
 - Node.js 18 o superior
 - PostgreSQL en ejecución
 - npm
 
-## Instalación
+### 1. 📥 Clonar el repositorio
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/contrerasrdianac406/ProyectoM2_DianaCarolinaContreras.git
-   cd ProyectoM2_DianaCarolinaContreras
-   ```
+```bash
+git clone https://github.com/contrerasrdianac406/ProyectoM2_DianaCarolinaContreras.git
+cd ProyectoM2_DianaCarolinaContreras
+```
 
-2. Instala las dependencias:
-   ```bash
-   npm install
-   ```
+### 2. 📦 Instalar dependencias
 
-3. Crea la base de datos y ejecuta el script SQL incluido en [scripts/setup.sql](scripts/setup.sql).
+```bash
+npm install
+```
 
-## Variables de entorno
+### 3. 🗄️ Crear la base de datos y ejecutar el setup SQL
 
-Crea un archivo .env con este contenido:
+Crea una base de datos en PostgreSQL, por ejemplo llamada `miniblog`, y ejecuta el script incluido en [scripts/setup.sql](scripts/setup.sql):
+
+```bash
+psql -U postgres -d miniblog -f scripts/setup.sql
+```
+
+Si prefieres usar una herramienta visual como pgAdmin, puedes ejecutar ese mismo script desde la interfaz.
+
+### 4. ⚙️ Configurar variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto con este contenido:
 
 ```env
 PORT=3020
@@ -56,7 +89,7 @@ API_KEY=mi_api_key
 CORS_ORIGIN=http://localhost:3020
 
 # Opción 1: usar una URL de conexión
-DB_URL=postgresql://usuario:password@localhost:5432/miniblog
+DATABASE_URL=postgresql://usuario:password@localhost:5432/miniblog
 
 # Opción 2: usar credenciales individuales
 # DB_HOST=localhost
@@ -66,51 +99,23 @@ DB_URL=postgresql://usuario:password@localhost:5432/miniblog
 # DB_PASSWORD=password
 ```
 
-## Ejecutar la aplicación
-
-Inicia el servidor en modo desarrollo:
+### 5. ▶️ Ejecutar la aplicación
 
 ```bash
 npm run dev
 ```
 
+La API quedará disponible en:
+- http://localhost:3020/health
+- http://localhost:3020/api-docs/
 
-## Endpoints principales
+## 🧪 Cómo ejecutar tests
 
-### Autores
-- POST /authors
-- GET /authors
-- GET /authors/:id
-- PUT /authors/:id
-- DELETE /authors/:id
-
-### Posts
-- POST /posts
-- GET /posts
-- GET /posts/:id
-- PUT /posts/:id
-- DELETE /posts/:id
-- GET /posts/author/:authorId
-
-## Pruebas
-
-Ejecuta las pruebas del proyecto:
+Ejecuta las pruebas del proyecto con:
 
 ```bash
 npm test
 ```
-
-Para ejecutar específicamente las pruebas de autores y posts:
-
-```bash
-npx vitest run authors posts
-```
-
-Resultado verificado en la ejecución actual:
-- 2 archivos de prueba procesados
-- 37 tests ejecutados
-- 37 tests aprobados
-- 0 fallos
 
 Para generar cobertura:
 
@@ -118,24 +123,75 @@ Para generar cobertura:
 npm run test:coverage
 ```
 
-## Estructura del proyecto
+Verificación reciente del proyecto:
+- 2 archivos de prueba procesados
+- 37 tests ejecutados
+- 37 tests aprobados
+- 0 fallos
 
-- [src/app.js](src/app.js): configuración de la aplicación Express.
-- [src/controllers](src/controllers): lógica de los endpoints.
-- [src/routers](src/routers): definición de rutas.
-- [src/test](src/test): pruebas automatizadas con Vitest.
-- [openapi.yaml](openapi.yaml): especificación OpenAPI de la API.
-- [scripts/setup.sql](scripts/setup.sql): script de creación de tablas y datos base.
+## 📚 Cómo ejecutar la documentación OpenAPI
 
+La documentación Swagger se sirve automáticamente desde la ruta:
 
-## Documentación Swagger
 - http://localhost:3020/api-docs/
 
-## Railway
+También está definida en [openapi.yaml](openapi.yaml) y se puede visualizar en entornos desplegados agregando `/api-docs` a la URL pública.
 
-- https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app/authors
-- https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app/posts
+## 🔗 Endpoints principales
 
-## Autor
+### 👤 Autores
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| POST | /authors | Crear un nuevo autor |
+| GET | /authors | Listar todos los autores |
+| GET | /authors/:id | Obtener un autor por ID |
+| PUT | /authors/:id | Actualizar un autor |
+| DELETE | /authors/:id | Eliminar un autor |
+
+### 📝 Posts
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| POST | /posts | Crear una nueva publicación |
+| GET | /posts | Listar todas las publicaciones |
+| GET | /posts/:id | Obtener una publicación por ID |
+| PUT | /posts/:id | Actualizar una publicación |
+| DELETE | /posts/:id | Eliminar una publicación |
+| GET | /posts/author/:authorId | Obtener publicaciones por autor |
+
+## 🚀 Deployment en Railway
+
+Esta API también puede desplegarse en Railway siguiendo estos pasos:
+
+1. Crear un nuevo proyecto en Railway y conectar el repositorio.
+2. Añadir las variables de entorno necesarias en la sección de Variables:
+   - `PORT` (Railway lo asigna automáticamente en la mayoría de casos)
+   - `NODE_ENV=production`
+   - `API_KEY=<valor_seguro>`
+   - `CORS_ORIGIN=<url_publica_del_proyecto>`
+   - `DATABASE_URL=<cadena_de_conexion_postgres>`
+3. Definir el comando de inicio del servicio como:
+   ```bash
+   npm start
+   ```
+4. Railway asignará una URL interna para la comunicación del servicio y una URL pública accesible desde internet.
+
+### URLs relevantes
+
+- URL interna del servicio: `http://0.0.0.0:${PORT}`
+- URL pública actual del despliegue: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app
+- Documentación en producción: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app/api-docs/
+
+## 🤖 Registro del uso de AI en el proyecto
+
+Se utilizó asistencia de IA para apoyar distintas etapas del desarrollo:
+- Generación y refinamiento de la estructura del backend y sus rutas.
+- Sugerencias para la organización del código, validaciones de entorno y documentación.
+- Elaboración de pruebas automatizadas y mejora del contenido del README.
+
+El uso de IA sirvió como apoyo de productividad y calidad, complementando la implementación manual del proyecto.
+
+## ✍️ Autor
 
 Diana Carolina Contreras Romero
