@@ -109,12 +109,18 @@ const obtenerUnPost = async (req, res) => {
 const actualizarUnPost = async (req, res) => {
   try {
     const id = Number(req.params.id);
-
+      // Validar que el ID sea un número válido para validar si es una letra 
     if (Number.isNaN(id)) {
       return res.status(400).json({
-        error: "el id debe ser un número",
+        error: "El id debe ser un número",
       });
     }
+
+    // Si el id es menor o igual a 0 o negativos
+      if (Number(id) <= 0) {
+        return res.status(404).json({ error: 'El id debe ser un número válido' });
+      }
+
 
     const {title, content,author_id, published } = req.body;
 
@@ -166,10 +172,14 @@ const eliminarUnPost = async (req, res) => {
   try {
     const id = Number(req.params.id);
 
+    // Validar que el ID sea un número válido para validar si es una letra 
     if (Number.isNaN(id)) {
-      return res.status(400).json({
-        error: "ID debe ser un número",
-      });
+      return res.status(400).json({ error: "El id debe ser un número" });
+    }
+
+    // Si el id es menor o igual a 0 o negativos
+    if (Number(id) <= 0) {
+      return res.status(404).json({ error: 'El id debe ser un número válido' });
     }
 
         //Validar que el autor exista
@@ -178,7 +188,7 @@ const eliminarUnPost = async (req, res) => {
       [id],
     );
     if (postExists.rows.length === 0) {
-      return res.status(404).json({ error: "Autor no encontrado" });
+      return res.status(404).json({ error: "Post no encontrado" });
     }
 
     const result = await pool.query("DELETE FROM posts WHERE id = $1 RETURNING *", [id]);

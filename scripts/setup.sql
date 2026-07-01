@@ -16,7 +16,7 @@
     FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
     );
 
-    -- Insertar datos de ejemplo
+
     INSERT INTO authors (name, email, bio) VALUES
     ('Ana Garcia', 'ana@example.com', 'Desarrolladora full-stack apasionada por Node.js'),
     ('Carlos Ruiz', 'carlos@example.com', 'Escritor tecnico especializado en bases de datos'),
@@ -30,3 +30,5 @@
     ('APIs RESTful', 'REST es un estilo arquitectonico...', 1, true),
     ('Manejo de errores en Express', 'El manejo apropiado de errores...', 3, true),
     ('Async/Await explicado', 'Las promesas simplifican el código asíncrono...', 1, true);
+
+    -- Insertar datos de ejemplo
