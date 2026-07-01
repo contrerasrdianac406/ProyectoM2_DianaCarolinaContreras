@@ -179,7 +179,7 @@ Esta API también puede desplegarse en Railway siguiendo estos pasos:
 
 ### URLs relevantes
 
-- URL interna del servicio: `http://0.0.0.0:${PORT}`
+- URL interna del servicio: `http://localhost:3020`
 - URL pública actual del despliegue: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app
 - Documentación en producción: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app/api-docs/
 
