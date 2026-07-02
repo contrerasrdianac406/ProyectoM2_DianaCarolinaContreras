@@ -176,6 +176,8 @@ Esta API también puede desplegarse en Railway siguiendo estos pasos:
    npm start
    ```
 4. Railway asignará una URL interna para la comunicación del servicio y una URL pública accesible desde internet.
+- proyectom2dianacarolinacontreras-production-6a42.up.railway.app/authors
+- proyectom2dianacarolinacontreras-production-6a42.up.railway.app/posts
 
 ### URLs relevantes
 
