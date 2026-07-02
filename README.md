@@ -160,31 +160,6 @@ También está definida en [openapi.yaml](openapi.yaml) y se puede visualizar en
 | DELETE | /posts/:id | Eliminar una publicación |
 | GET | /posts/author/:authorId | Obtener publicaciones por autor |
 
-## 🚀 Deployment en Railway
-
-Esta API también puede desplegarse en Railway siguiendo estos pasos:
-
-1. Crear un nuevo proyecto en Railway y conectar el repositorio.
-2. Añadir las variables de entorno necesarias en la sección de Variables:
-   - `PORT` (Railway lo asigna automáticamente en la mayoría de casos)
-   - `NODE_ENV=production`
-   - `API_KEY=<valor_seguro>`
-   - `CORS_ORIGIN=<url_publica_del_proyecto>`
-   - `DATABASE_URL=<cadena_de_conexion_postgres>`
-3. Definir el comando de inicio del servicio como:
-   ```bash
-   npm start
-   ```
-4. Railway asignará una URL interna para la comunicación del servicio y una URL pública accesible desde internet.
-- proyectom2dianacarolinacontreras-production-6a42.up.railway.app/authors
-- proyectom2dianacarolinacontreras-production-6a42.up.railway.app/posts
-
-### URLs relevantes
-
-- URL interna del servicio: `http://localhost:3020`
-- URL pública actual del despliegue: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app
-- Documentación en producción: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app/api-docs/
-
 ## � Ejemplos de ejecución de endpoints con cURL
 
 ### 👤 Endpoints de Autores
@@ -272,6 +247,33 @@ curl -X DELETE http://localhost:3020/posts/1
 curl -X GET http://localhost:3020/posts/author/1
 ```
 
+
+## 🚀 Deployment en Railway
+
+Esta API también puede desplegarse en Railway siguiendo estos pasos:
+
+1. Crear un nuevo proyecto en Railway y conectar el repositorio.
+2. Añadir las variables de entorno necesarias en la sección de Variables:
+   - `PORT` (Railway lo asigna automáticamente en la mayoría de casos)
+   - `NODE_ENV=production`
+   - `API_KEY=<valor_seguro>`
+   - `CORS_ORIGIN=<url_publica_del_proyecto>`
+   - `DATABASE_URL=<cadena_de_conexion_postgres>`
+3. Definir el comando de inicio del servicio como:
+   ```bash
+   npm start
+   ```
+4. Railway asignará una URL interna para la comunicación del servicio y una URL pública accesible desde internet.
+- proyectom2dianacarolinacontreras-production-6a42.up.railway.app/authors
+- proyectom2dianacarolinacontreras-production-6a42.up.railway.app/posts
+
+### URLs relevantes
+
+- URL interna del servicio: `http://localhost:3020`
+- URL pública actual del despliegue: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app
+- Documentación en producción: https://proyectom2dianacarolinacontreras-production-6a42.up.railway.app/api-docs/
+
+
 ## 💬 Prompts utilizados con IA
 
 Los siguientes prompts fueron usados durante el desarrollo del proyecto para optimizar distintas etapas:
@@ -324,11 +326,7 @@ db.query(querySegura, valores)
 
 ### Prompts de Desarrollo:
 - "Cómo conectarse a PostgreSQL desde Node.js y ejecutar queries parametrizadas"
-- "Cómo validar datos y evitar SQL injection en endpoints REST"
-
-### Prompts de Documentación:
-- "Genera una especificación OpenAPI (Swagger) para documentar una API REST"
-
+  
 Para conectarte a PostgreSQL desde Node.js de forma eficiente y segura, la librería estándar de la industria es pg (node-postgres). Esta librería soporta la creación de un Pool de conexiones (ideal para aplicaciones web porque reutiliza conexiones) y maneja consultas parametrizadas nativamente para protegerte contra inyección SQL.
 
 A continuación, te muestro cómo configurarlo paso a paso.
@@ -365,6 +363,58 @@ module.exports = {
   query: (text, params) => pool.query(text, params),
 };
 ```
+
+  
+- "Cómo validar datos y evitar SQL injection en endpoints REST"
+Evitar SQL Injection (Consultas Parametrizadas)
+Nunca concatenes variables directamente en tus strings de SQL (ej. `SELECT * FROM usuarios WHERE email = '${email}'`). Si un atacante envía un email malicioso como ' OR '1'='1, podría saltarse la autenticación o borrar tablas enteras.
+
+La solución definitiva son las consultas parametrizadas (Prepared Statements). Al separar la estructura de la consulta de los datos reales, el motor de la base de datos trata los valores estrictamente como texto o números planos, anulando cualquier código SQL malicioso.
+
+```bash
+JavaScript
+const express = require('express');
+const router = express.Router();
+const db = require('./db'); // Tu Pool de conexión a PostgreSQL
+const { validarRegistro } = require('./middlewares/validar');
+
+// Aplicamos el middleware de validación antes de procesar la petición
+router.post('/registrar', validarRegistro, async (req, res) => {
+  const { nombre, email, password } = req.body;
+
+  // 1. Estructura de la query usando marcadores de posición ($1, $2, $3)
+  const queryTexto = `
+    INSERT INTO usuarios (nombre, email, password_hash) 
+    VALUES ($1, $2, $3) 
+    RETURNING id, creado_en
+  `;
+  
+  // 2. Los datos van en un array independiente
+  const valores = [nombre, email, password]; // En producción, recuerda Hashear el password primero
+
+  try {
+    // El driver 'pg' envía la estructura y los datos por separado a PostgreSQL
+    const resultado = await db.query(queryTexto, valores);
+    
+    return res.status(201).json({
+      mensaje: 'Usuario registrado con éxito',
+      usuario: resultado.rows[0]
+    });
+  } catch (error) {
+    // Manejo de errores específicos (ej. email duplicado)
+    if (error.code === '23505') { // Código de error de llave duplicada en PostgreSQL
+      return res.status(409).json({ error: 'El correo electrónico ya está registrado.' });
+    }
+    
+    console.error('Error de base de datos:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+module.exports = router;
+```
+
+### Prompts de Documentación:
 
 - "Cómo configurar y servir documentación Swagger/OpenAPI en una aplicación Express"
 
